@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({ navigation }) => {
   const [menuItems, setMenuItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [cartItems, setCartItems] = useState([]);
 
  // Function to load menu items from AsyncStorage
  const loadMenuItems = async () => {

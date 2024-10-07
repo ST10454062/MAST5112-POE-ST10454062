@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+
+
 import * as ScreenOrientation from 'expo-screen-orientation';
 import ChefMenuScreen from './src/screens/ChefMenuScreen';
 import AddItemScreen from './src/screens/AddItemScreen';
@@ -48,7 +50,7 @@ const App = () => {
         headerTitleStyle: {
           fontWeight: 'bold', 
         },
-        headerLeft: null, // This will remove the back button
+        headerLeft: () => null, // This will remove the back button
       },
     }
   );
