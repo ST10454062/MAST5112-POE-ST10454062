@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 30,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5EDE2',
   },
   label: {
     fontSize: 20,

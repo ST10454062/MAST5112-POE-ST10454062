@@ -50,26 +50,10 @@ const MenuScreen = ({ navigation }) => {
       setCartItems(updatedCart);
       navigation.navigate('CartScreen', { items: updatedCart });
 
-
-      const updatedCounts = { ...itemCounts, [item.name]: (itemCounts[item.name] || 0) + 1 };
-      setItemCounts(updatedCounts);
-
     } catch (error) {
       console.log('Error adding item to cart: ', error);
     }
 
-  };
-
-  // Function to remove item from cart
-  const removeItem = (item) => {
-    if (itemCounts[item.name] > 0) {
-      const updatedCart = cart.filter((cartItem, index) => index !== cart.lastIndexOf(item)); // Remove last occurrence
-      setCart(updatedCart);
-
-      // Decrease the count
-      const updatedCounts = { ...itemCounts, [item.name]: itemCounts[item.name] - 1 };
-      setItemCounts(updatedCounts);
-    }
   };
 
 
@@ -125,13 +109,6 @@ const MenuScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('Home')}
       >
         <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity 
-        style={styles.chefButton} 
-        onPress={() => navigation.navigate('ChefMenu')}
-      >
-        <Text style={styles.chefButtonText}>Chef</Text>
       </TouchableOpacity>
 
       {/* Search Bar */}
@@ -218,7 +195,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5', // Light gray background
+    backgroundColor: '#F5EDE2',
   },
   itemContainer: {
     padding: 15,
@@ -308,23 +285,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
-  },
-  chefButton: {
-    position: 'absolute',
-    top: 20,
-    right: 25,
-    backgroundColor: '#F5E1D2', 
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    zIndex: 10, // Ensures the button appears on top
-    height: 40,
-  },
-  chefButtonText: {
-    color: '#000000',
     fontWeight: 'bold',
   },
   backButton: {

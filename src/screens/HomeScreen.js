@@ -107,13 +107,6 @@ const renderItem = ({ item }) => (
                 <Text style={styles.itemPrice}>R{startersDish.price}</Text>
                 <Text style={styles.itemDescription}>{startersDish.description}</Text>
               </View>
-              {/* add to cart Button */}
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => handleAddToCart(startersDish)} // Corrected the item reference
-              >
-                <Text style={styles.addButtonText}>Add to Cart</Text>
-              </TouchableOpacity>
             </View>
             <Text style={styles.averagePrice}>Avg Price: R{startersAveragePrice}</Text>
           </View>
@@ -130,13 +123,6 @@ const renderItem = ({ item }) => (
                 <Text style={styles.itemPrice}>R{mainDish.price}</Text>
                 <Text style={styles.itemDescription}>{mainDish.description}</Text>
               </View>
-              {/* add to cart Button */}
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => handleAddToCart(mainDish)} // Corrected the item reference
-              >
-                <Text style={styles.addButtonText}>Add to Cart</Text>
-              </TouchableOpacity>
             </View>
             <Text style={styles.averagePrice}>Avg Price: R{mainAveragePrice}</Text>
           </View>
@@ -153,13 +139,6 @@ const renderItem = ({ item }) => (
                 <Text style={styles.itemPrice}>R{dessertsDish.price}</Text>
                 <Text style={styles.itemDescription}>{dessertsDish.description}</Text>
               </View>
-              {/* add to cart Button */}
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => handleAddToCart(dessertsDish)} // Corrected the item reference
-              >
-                <Text style={styles.addButtonText}>Add to Cart</Text>
-              </TouchableOpacity>
             </View>
             <Text style={styles.averagePrice}>Avg Price: R{dessertsAveragePrice}</Text>
           </View>
@@ -173,8 +152,8 @@ const renderItem = ({ item }) => (
         </TouchableOpacity>
 
         {/* Navigation to CartScreen */}
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Cart')}>
-          <Text style={styles.navButtonText}>Cart</Text>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('ChefMenu')}>
+          <Text style={styles.navButtonText}>Chef</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -185,7 +164,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F5EDE2',
   },
   headerImageContainer: {
     alignItems: 'center',
@@ -254,16 +233,6 @@ const styles = StyleSheet.create({
     color: '#777',
     lineHeight: 20, // More space between lines for better readability
     width: 150,
-  },
-  addButton: {
-    backgroundColor: '#8B4513',
-    paddingVertical: 7,
-    paddingHorizontal: 5,
-    borderRadius: 20,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
   averagePrice: {
     fontSize: 14,
