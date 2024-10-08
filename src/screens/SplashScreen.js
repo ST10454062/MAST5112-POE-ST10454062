@@ -5,7 +5,7 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ImageBackground 
-        source={require('../../assets/splashim.jpeg')} // Add your splash image here
+        source={require('../../assets/splashim.jpeg')} 
         style={styles.backgroundImage}>
         <View style={styles.buttonContainer}>
           <Button

@@ -12,6 +12,8 @@ const MenuScreen = ({ navigation }) => {
   const [isPressed, setIsPressed] = useState(false); // Track if the button is pressed
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [cartItems, setCartItems] = useState([]);
+  const [itemCounts, setItemCounts] = useState({}); // Store the count of each item
+
 
   // Function to load menu items from AsyncStorage
   const loadMenuItems = async () => {
@@ -47,8 +49,26 @@ const MenuScreen = ({ navigation }) => {
       // Update state and navigate to CartScreen
       setCartItems(updatedCart);
       navigation.navigate('CartScreen', { items: updatedCart });
+
+
+      const updatedCounts = { ...itemCounts, [item.name]: (itemCounts[item.name] || 0) + 1 };
+      setItemCounts(updatedCounts);
+
     } catch (error) {
       console.log('Error adding item to cart: ', error);
+    }
+
+  };
+
+  // Function to remove item from cart
+  const removeItem = (item) => {
+    if (itemCounts[item.name] > 0) {
+      const updatedCart = cart.filter((cartItem, index) => index !== cart.lastIndexOf(item)); // Remove last occurrence
+      setCart(updatedCart);
+
+      // Decrease the count
+      const updatedCounts = { ...itemCounts, [item.name]: itemCounts[item.name] - 1 };
+      setItemCounts(updatedCounts);
     }
   };
 
@@ -61,6 +81,13 @@ const MenuScreen = ({ navigation }) => {
       <Text style={styles.itemDescription}>{item.description}</Text>
       <TouchableOpacity onPress={() => handleAddToCart(item)} style={styles.addButton}>
         <Text style={styles.addButtonText}>Add to Cart</Text>
+      </TouchableOpacity>
+      <Text style={styles.itemCount}>
+          {itemCounts[item.name] || 0} {/* Display item count */}
+      </Text>
+
+      <TouchableOpacity style={styles.removeButton} onPress={() => removeItem(item)}>
+          <Text style={styles.buttonText}>-</Text>
       </TouchableOpacity>
     </View>
   );
@@ -115,6 +142,8 @@ const MenuScreen = ({ navigation }) => {
         onChangeText={setSearchQuery}
       />
 
+
+
       {/* Navigation Bar for switching categories */}
       <View style={styles.navbar}>
         <TouchableOpacity 
@@ -167,6 +196,7 @@ const MenuScreen = ({ navigation }) => {
             >
               <Text style={styles.addButtonText}>Add to Cart</Text>
             </TouchableOpacity>
+
           </View>
         )}
       />
