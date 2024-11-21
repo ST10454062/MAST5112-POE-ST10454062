@@ -17,7 +17,7 @@ const HomeScreen = ({ navigation }) => {
     setIsLoading(false); // Set loading to false after loading
   } catch (error) {
     console.log('Error loading menu items from AsyncStorage', error);
-    Alert.alert('Error', 'Failed to load menu items.'); // Alert for errors
+    Alert.alert('Error', 'Failed to load menu items.');
     setIsLoading(false);
   }
 };

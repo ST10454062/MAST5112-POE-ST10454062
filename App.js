@@ -50,7 +50,7 @@ const App = () => {
         headerTitleStyle: {
           fontWeight: 'bold', 
         },
-        headerLeft: () => null, // This will remove the back button
+        headerLeft: () => null,
       },
     }
   );
