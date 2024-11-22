@@ -44,7 +44,7 @@ const App = () => {
         title: 'Christoffels Cafe',
         headerTitleAlign: 'center',
         headerStyle: {
-          backgroundColor: '#8B4513', 
+          backgroundColor: '#7F4F24', 
         },
         headerTintColor: '#fff', 
         headerTitleStyle: {

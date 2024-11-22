@@ -1,219 +1,191 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert  } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-
 const MenuScreen = ({ navigation }) => {
-
-  const [selectedCategory, setSelectedCategory] = useState('Main'); // Default to Main category
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
+  const [selectedCategory, setSelectedCategory] = useState('Main');
+  const [searchQuery, setSearchQuery] = useState('');
   const [menuItems, setMenuItems] = useState([]);
-  const [isPressed, setIsPressed] = useState(false); // Track if the button is pressed
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isPressed, setIsPressed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-  const [itemCounts, setItemCounts] = useState({}); // Store the count of each item
+  const [itemCounts, setItemCounts] = useState({});
 
-
-  // Function to load menu items from AsyncStorage
   const loadMenuItems = async () => {
     try {
       const savedItems = await AsyncStorage.getItem('menuItems');
       if (savedItems) {
         setMenuItems(JSON.parse(savedItems));
       }
-      setIsLoading(false); // Set loading to false after loading
+      setIsLoading(false);
     } catch (error) {
       console.log('Error loading menu items from AsyncStorage', error);
-      Alert.alert('Error', 'Failed to load menu items.'); // Alert for errors
+      Alert.alert('Error', 'Failed to load menu items.');
       setIsLoading(false);
     }
   };
 
-  // Load menu items when the component mounts
   useEffect(() => {
     loadMenuItems();
   }, []);
-
-
 
   const handleAddToCart = async (newItem) => {
     try {
       const storedItems = await AsyncStorage.getItem('cartItems');
       const existingItems = storedItems ? JSON.parse(storedItems) : [];
-
-      // Check if the item is already in the cart
       const updatedCart = [...existingItems, newItem];
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCart));
-      
-      // Update state and navigate to CartScreen
       setCartItems(updatedCart);
       navigation.navigate('CartScreen', { items: updatedCart });
-
     } catch (error) {
       console.log('Error adding item to cart: ', error);
     }
-
   };
 
-
-  // Render individual menu items
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.itemPrice}>R{item.price.toFixed(2)}</Text>
-      <Text style={styles.itemDescription}>{item.description}</Text>
-      <TouchableOpacity onPress={() => handleAddToCart(item)} style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add to Cart</Text>
-      </TouchableOpacity>
-      <Text style={styles.itemCount}>
-          {itemCounts[item.name] || 0} {/* Display item count */}
-      </Text>
-
-      <TouchableOpacity style={styles.removeButton} onPress={() => removeItem(item)}>
-          <Text style={styles.buttonText}>-</Text>
-      </TouchableOpacity>
-    </View>
-  );
-  
-
-  // Filter items based on selected category and search query
   const filteredItems = menuItems.filter(item =>
     item.course === selectedCategory &&
-    (item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Display loading indicator
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#8B4513" />;
   }
 
-
-    // Calculate total number of courses when button is pressed for that category
   const totalCategoryCourses = filteredItems.length;
-    // Calculate total number of courses for each category
   const startersCount = menuItems.filter(item => item.course === 'Starters').length;
   const mainsCount = menuItems.filter(item => item.course === 'Main').length;
   const dessertsCount = menuItems.filter(item => item.course === 'Desserts').length;
   const totalCourses = startersCount + mainsCount + dessertsCount;
 
-  
-
-
   return (
-    <View style={styles.container}>
-      {/* Add Item Button positioned in top-left corner */}
-      <TouchableOpacity 
-        style={styles.backButton} 
-        onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
-
-      {/* Search Bar */}
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search dish..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-
-
-
-      {/* Navigation Bar for switching categories */}
-      <View style={styles.navbar}>
-        <TouchableOpacity 
-          style={[styles.navButton, selectedCategory === 'Starters' && styles.activeButton]} 
-          onPress={() => setSelectedCategory('Starters')}
-          onPressIn={() => setIsPressed(true)}   // Set pressed state to true when pressed
-          onPressOut={() => setIsPressed(false)} 
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate('Home')}
         >
-          <Text style={[styles.navText, isPressed && styles.pressedText]}>Starters</Text>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
 
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search dish..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
 
-        <TouchableOpacity 
-          style={[styles.navButton, selectedCategory === 'Main' && styles.activeButton]} 
-          onPress={() => setSelectedCategory('Main')}
-        >
-          <Text style={styles.navText}>Main</Text>
-        </TouchableOpacity>
+        <View style={styles.navbar}>
+          <TouchableOpacity
+            style={[styles.navButton, selectedCategory === 'Starters' && styles.activeButton]}
+            onPress={() => setSelectedCategory('Starters')}
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}
+          >
+            <Text style={[styles.navText, isPressed && styles.pressedText]}>Starters</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={[styles.navButton, selectedCategory === 'Desserts' && styles.activeButton]} 
-          onPress={() => setSelectedCategory('Desserts')}
-        >
-          <Text style={styles.navText}>Desserts</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.navButton, selectedCategory === 'Main' && styles.activeButton]}
+            onPress={() => setSelectedCategory('Main')}
+          >
+            <Text style={styles.navText}>Main</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.navButton, selectedCategory === 'Desserts' && styles.activeButton]}
+            onPress={() => setSelectedCategory('Desserts')}
+          >
+            <Text style={styles.navText}>Desserts</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.totalCoursesText}>Total Courses in {selectedCategory}: {totalCategoryCourses}</Text>
+        <Text style={styles.totalCoursesText}>Total Courses (All Categories): {totalCourses}</Text>
+
+        <FlatList
+          data={filteredItems}
+          keyExtractor={(item, index) => item.id ? item.id.toString() : `${item.name}-${index}`}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image source={require('../../assets/main.jpeg')} style={styles.image} />
+              <TouchableOpacity>
+                <View style={styles.itemTextContainer}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemPrice}>R{item.price}</Text>
+                  <Text style={styles.itemDescription}>{item.description}</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => handleAddToCart(item)}
+              >
+                <Text style={styles.addButtonText}>Add to Cart</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.cartButton}
+            onPress={() => navigation.navigate('Cart', { items: cartItems })}
+          >
+            <Text style={styles.cartButtonText}>Go to Cart</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <Text style={styles.totalCoursesText}>Total Courses in {selectedCategory}: {totalCategoryCourses}</Text>
-      <Text style={styles.totalCoursesText}>Total Courses (All Categories): {totalCourses}</Text>
-
-      {/* List of menu items based on the selected category */}
-      <FlatList
-        data={filteredItems}
-        keyExtractor={(item, index) => item.id ? item.id.toString() : `${item.name}-${index}`}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={require('../../assets/main.jpeg')}style={{width: 100, height: 100}} />
-            <TouchableOpacity>
-              <View style={styles.itemTextContainer}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPrice}>R{item.price}</Text>
-                <Text style={styles.itemDescription}>{item.description}</Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* add to cart Button */}
-            <TouchableOpacity 
-              style={styles.addButton} 
-              onPress={() => handleAddToCart(item)}
-            >
-              <Text style={styles.addButtonText}>Add to Cart</Text>
-            </TouchableOpacity>
-
-          </View>
-        )}
-      />
-      <View style={styles.footer}>
-        {/* Add a button to navigate to the CartScreen */}
-        <TouchableOpacity 
-          style={styles.cartButton} 
-          onPress={() => navigation.navigate('Cart', { items: cartItems })}
-        >
-          <Text style={styles.cartButtonText}>Go to Cart</Text>
-        </TouchableOpacity>
-        <Text style={styles.footerText}>    </Text>
-      </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F5EDE2',
+    backgroundColor: '#F1E5D7',
   },
-  itemContainer: {
-    padding: 15,
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 15,
+    width: 80,
+    backgroundColor: '#7F4F24',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    left: 10,
+  },
+  searchBar: {
+    position: 'absolute',
+    top: 20,
+    left: 120,
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+    zIndex: 10,
+    borderColor: '#7F4F24',
+    borderWidth: 1,
+    borderRadius: 30,
     backgroundColor: '#fff',
-    borderRadius: 5,
-    marginBottom: 10,
-    elevation: 2,
+    height: 40,
   },
   navbar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-    marginTop: 55,
+    justifyContent: 'space-evenly',
+    marginTop: 70,
+    marginBottom: 15,
   },
   navButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
     borderRadius: 20,
     height: 35,
     shadowColor: '#000',
@@ -223,139 +195,92 @@ const styles = StyleSheet.create({
     elevation: 15,
   },
   activeButton: {
-    backgroundColor: '#8B4513', // Highlight active button
+    backgroundColor: '#7F4F24',
   },
   navText: {
     fontWeight: 'bold',
-    color: '#000',
-  },
-
-
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    height: 150,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-    elevation: 10,
-    marginVertical: 10,
-    overflow: 'hidden',
-    padding: 20,
-    flexDirection: 'row', 
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  image: {
-    width: 2,
-    height: 2,
-    borderRadius: 2,
-  },
-  itemTextContainer: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  itemName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 5,
-  },
-  itemDescription: {
-    fontSize: 14,
-    color: '#777',
-    lineHeight: 20, // More space between lines for better readability
-    width: 150,
-  },
-  addButton: {
-    backgroundColor: '#8B4513',
-    paddingVertical: 7,
-    paddingHorizontal: 5,
-    borderRadius: 20,
-    height: 50,
-    width: 50,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 15,
-    backgroundColor: '#F5E1D2', 
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    zIndex: 10, // Ensures the button appears on top
-    height: 40,
-  },
-  backButtonText: {
     color: '#000000',
-    fontWeight: 'bold',
-  },
-  searchBar: {
-    position: 'absolute',
-    top: 20,
-    left: 85,
-    paddingHorizontal: 65,
-    paddingVertical: 10,
-    zIndex: 10,
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    borderRadius: 30,
-    backgroundColor: '#F5E1D2',
-    height: 40,
   },
   totalCoursesText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#4E3B31',
+    marginLeft: 60,
+    marginBottom: 15,
+  },
+  card: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 20,
+    marginLeft: 50,
+    marginRight: 50,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    borderColor: '#D9B88C',
+    borderWidth: 1,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginLeft: 70,
+    marginBottom: 15,
+  },
+  itemTextContainer: {
+    marginBottom: 15,
+  },
+  itemName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4E3B31',
+    marginBottom: 5,
+    marginLeft: 60,
+  },
+  itemPrice: {
+    fontSize: 16,
+    color: '#7F4F24',
+    marginBottom: 5,
+    marginLeft: 100,
+  },
+  itemDescription: {
+    fontSize: 16,
+    color: '#6D4B3C',
+    lineHeight: 20,
+  },
+  addButton: {
+    backgroundColor: '#7F4F24',
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: 110,
+    marginLeft: 70,
     marginBottom: 20,
   },
+  addButtonText: {
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 0,
+    backgroundColor: '#7F4F24',
+    paddingVertical: 15,
+  },
   cartButton: {
-    position: 'absolute',
-    bottom: 10,
-    left: 160,
-    backgroundColor: '#F5E1D2', 
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    backgroundColor: '#fff',
     borderRadius: 20,
-    height: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   cartButtonText: {
     color: '#000000',
     fontWeight: 'bold',
-  },
-  footer: {
-    backgroundColor: '#8B4513',
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '300',
-    height: 60,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: '#fff',
-  },
-  footerText: {
-    color: '#fff',
-    fontSize: 14,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, FlatList,KeyboardAvoidingView, Platform, Image, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 
@@ -28,6 +28,8 @@ const ChefMenuScreen = ({ navigation }) => {
       }
     } catch (error) {
       console.log('Error loading menu items from AsyncStorage', error);
+      Alert.alert('Error', 'Failed to load menu items.');
+      setIsLoading(false);
     }
   };
 
@@ -66,8 +68,18 @@ const ChefMenuScreen = ({ navigation }) => {
     item.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-    // Calculate total number of courses when button is pressed for that category
+  // Calculate total number of courses when button is pressed for that category
   const totalCategoryCourses = filteredItems.length;
+
+  // Calculate average price for each category
+  const calculateAveragePrice = (category) => {
+    const categoryItems = menuItems.filter((item) => item.course === category);
+    if (categoryItems.length === 0) return 0;
+    const total = categoryItems.reduce((sum, item) => sum + item.price, 0);
+    return (total / categoryItems.length).toFixed(2);
+  };
+
+
     // Calculate total number of courses for each category
   const startersCount = menuItems.filter(item => item.course === 'Starters').length;
   const mainsCount = menuItems.filter(item => item.course === 'Main').length;
@@ -75,7 +87,14 @@ const ChefMenuScreen = ({ navigation }) => {
   const totalCourses = startersCount + mainsCount + dessertsCount;
 
 
+
+
+
   return (
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+  >
     <View style={styles.container}>
       {/* Add Item Button positioned in top-left corner */}
       <TouchableOpacity 
@@ -129,7 +148,7 @@ const ChefMenuScreen = ({ navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image source={require('../../assets/main.jpeg')}style={{width: 100, height: 100}} />
+            <Image source={require('../../assets/main.jpeg')}style={styles.image} />
             <TouchableOpacity>
               <View style={styles.itemTextContainer}>
                 <Text style={styles.itemName}>{item.name}</Text>
@@ -159,6 +178,7 @@ const ChefMenuScreen = ({ navigation }) => {
         <Text style={styles.footerText}>    </Text>
       </View>
     </View>
+  </KeyboardAvoidingView>
   );
 };
 
@@ -166,96 +186,27 @@ const ChefMenuScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F5EDE2',
+    backgroundColor: '#F1E5D7', 
   },
-  navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-    marginTop: 55,
-  },
-  navButton: {
+  searchBar: {
+    position: 'absolute',
+    top: 20,
+    left: 25,
+    paddingHorizontal: 65,
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 20,
-    height: 35,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-    elevation: 15,
-  },
-  activeButton: {
-    backgroundColor: '#8B4513', // Highlight active button
-  },
-  navText: {
-    fontWeight: 'bold',
-    color: '#000',
-  },
-
-
-  card: {
+    zIndex: 10,
+    borderColor: '#7F4F24',
+    borderWidth: 1,
+    borderRadius: 30,
     backgroundColor: '#fff',
-    borderRadius: 10,
-    height: 150,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-    elevation: 10,
-    marginVertical: 10,
-    overflow: 'hidden',
-    padding: 20,
-    flexDirection: 'row', 
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  image: {
-    width: 2,
-    height: 2,
-    borderRadius: 2,
-  },
-  itemTextContainer: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  itemName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 5,
-  },
-  itemDescription: {
-    fontSize: 14,
-    color: '#777',
-    lineHeight: 20, // More space between lines for better readability
-    width: 150,
-  },
-  removeButton: {
-    backgroundColor: '#8B4513',
-    paddingVertical: 7,
-    paddingHorizontal: 5,
-    borderRadius: 20,
-  },
-  removeButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    height: 40,
   },
   addButton: {
     position: 'absolute',
     top: 20,
     right: 25,
-    backgroundColor: '#F5E1D2', 
-    borderColor: '#8B4513',
+    backgroundColor: '#fff', 
+    borderColor: '#7F4F24',
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -267,55 +218,118 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: 'bold',
   },
-  searchBar: {
-    position: 'absolute',
-    top: 20,
-    left: 25,
-    paddingHorizontal: 65,
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 70,
+    marginBottom: 15,
+  },
+  navButton: {
     paddingVertical: 10,
-    zIndex: 10,
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    borderRadius: 30,
-    backgroundColor: '#F5E1D2',
-    height: 40,
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    height: 35,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 5,
+    elevation: 15,
+  },
+  activeButton: {
+    backgroundColor: '#7F4F24',
+  },
+  activeText: {
+    color: '#fff',
+  },
+  navText: {
+    fontWeight: 'bold',
+    color: '#000000',
   },
   totalCoursesText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#4E3B31',
+    marginLeft: 60,
+    marginBottom: 15,
+  },
+  scrollContainer: {
+    paddingBottom: 100, // Ensure there's space at the bottom for the footer
+  },
+  card: {
+    flexDirection: 'column',  // Stack items vertically
+    backgroundColor: '#ffffff', // Soft beige/light brown card background
+    borderRadius: 15, // Rounded corners
+    padding: 10,
     marginBottom: 20,
+    marginLeft: 50,
+    marginRight: 50,
+    elevation: 5,  // Shadow for Android
+    shadowColor: '#000',  // Shadow color for iOS
+    shadowOffset: { width: 0, height: 4 },  // Shadow position
+    shadowOpacity: 0.3,  // Shadow intensity
+    shadowRadius: 8,  // Shadow blur radius
+    borderColor: '#D9B88C',  // Light golden border
+    borderWidth: 1,  // Border width
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginLeft: 70,
+    marginBottom: 15,
+  },
+  itemTextContainer: {
+    marginBottom: 15, // Spacing before the button
+  },
+  itemName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4E3B31',
+    marginBottom: 5,
+    marginLeft: 60,
+  },
+  itemPrice: {
+    fontSize: 16,
+    color: '#7F4F24',
+    marginBottom: 5,
+    marginLeft: 100,
+  },
+  itemDescription: {
+    fontSize: 16,
+    color: '#6D4B3C',
+    lineHeight: 20,
+  },
+  removeButton: {
+    backgroundColor: '#7F4F24',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40,
+  },
+  removeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   backButton: {
-    position: 'absolute',
-    bottom: 10,
-    left: 160,
-    backgroundColor: '#F5E1D2', 
-    borderColor: '#8B4513',
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    backgroundColor: '#fff',
     borderRadius: 20,
-    zIndex: 10, // Ensures the button appears on top
-    height: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   backButtonText: {
     color: '#000000',
     fontWeight: 'bold',
   },
+
   footer: {
-    backgroundColor: '#8B4513',
-    padding: 5,
-    alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
-    width: '300',
-    height: 60,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: '#fff',
+    marginBottom: 0,
+    backgroundColor: '#7F4F24',
+    paddingVertical: 15,
   },
   footerText: {
     color: '#fff',

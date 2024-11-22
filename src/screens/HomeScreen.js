@@ -163,12 +163,11 @@ const renderItem = ({ item }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F5EDE2',
   },
   headerImageContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    margin: 20,
   },
   headerImage: {
     width: '100%',
@@ -176,20 +175,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,
     textAlign: 'center',
   },
   chefChoiceContainer: {
-    flexDirection: 'column', // Set to column to stack cards vertically
+    flexDirection: 'column',
+  },
+  categoryContainer: {
+    margin: 20,
   },
   categoryTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 10,
+    marginLeft: 150,
   },
   card: {
     backgroundColor: '#fff',
@@ -207,10 +210,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  image: {
-    width: 2,
-    height: 2,
-    borderRadius: 2,
+  cardImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
   },
   itemTextContainer: {
     flex: 1,
@@ -219,40 +222,49 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#4E3B31',
     marginBottom: 5,
-    color: '#333',
+    marginLeft: 10,
   },
   itemPrice: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
+    color: '#7F4F24',
     marginBottom: 5,
+    marginLeft: 20,
   },
   itemDescription: {
     fontSize: 14,
-    color: '#777',
-    lineHeight: 20, // More space between lines for better readability
-    width: 150,
+    color: '#666',
   },
   averagePrice: {
-    fontSize: 14,
-    color: '#8B4513',
+    fontSize: 16,
     fontWeight: 'bold',
+    marginTop: 5,
+    textAlign: 'right',
+    color: '#333',
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 30,
+    justifyContent: 'center',
+    marginBottom: 0,
+    backgroundColor: '#7F4F24',
+    paddingVertical: 15,
   },
   navButton: {
-    backgroundColor: '#8B4513',
+    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 10,
+    borderRadius: 25,
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '35%',
   },
   navButtonText: {
-    color: '#fff',
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#000000',
+    textAlign: 'center',
   },
 });
 

@@ -78,32 +78,35 @@ const CartScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F5EDE2',
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 20,
+    margin: 10,
+    marginTop: 20,
+    marginLeft: 120,
+    color: '#333',
   },
   itemContainer: {
-    padding: 15,
+    padding: 20,
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 10,
+    margin: 30,
     elevation: 2,
   },
   itemName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   itemPrice: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: 17,
+    color: '#000000',
   },
   removeButton: {
     marginTop: 10,
-    backgroundColor: '#8B4513', 
+    backgroundColor: '#7F4F24',
     paddingVertical: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
   },
   checkoutButton: {
     marginTop: 20,
-    backgroundColor: '#8B4513',
+    backgroundColor: '#7F4F24',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
